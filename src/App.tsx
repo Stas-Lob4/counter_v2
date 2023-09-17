@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import s from './App..module.css';
 import {Counter} from './Counter';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {Setting} from './Setting';
 
 
@@ -13,11 +12,14 @@ function App() {
 
     const initMaxValue = 5;
 
-    const [minValue, setMinValue] = useState(valueMinValue ?  JSON.parse(valueMinValue) : 0);
-    const [maxValue, setMaxValue] = useState(valueMaxValue ?  JSON.parse(valueMaxValue) : initMaxValue);
+    const [minValue, setMinValue] = useState(valueMinValue ? JSON.parse(valueMinValue) : 0);
+    const [maxValue, setMaxValue] = useState(valueMaxValue ? JSON.parse(valueMaxValue) : initMaxValue);
     const initValue = () => valueAsString ? JSON.parse(valueAsString) : minValue
     const [value, setValue] = useState(initValue);
 
+    useEffect(() => {
+        setValue(minValue)
+    }, [minValue, maxValue]);
     useEffect(() => {
         localStorage.setItem('counterValue', JSON.stringify(value))
     }, [value]);
@@ -40,21 +42,21 @@ function App() {
 
     return (
         <div className={s.App}>
-                               <Counter
-                                   value={value}
-                                   maxValue={maxValue}
-                                   minValue={minValue}
-                                   incCounter={incCounter}
-                                   decCounter={decCounter}
-                                   resetCounter={resetCounter}
-                               />
+            <Counter
+                value={value}
+                maxValue={maxValue}
+                minValue={minValue}
+                incCounter={incCounter}
+                decCounter={decCounter}
+                resetCounter={resetCounter}
+            />
 
-                               <Setting
-                                   maxValue={maxValue}
-                                   minValue={minValue}
-                                   updateMaxValue={updateMaxValue}
-                                   updateMinValue={updateMinValue}
-                               />
+            <Setting
+                maxValue={maxValue}
+                minValue={minValue}
+                updateMaxValue={updateMaxValue}
+                updateMinValue={updateMinValue}
+            />
         </div>
     );
 }

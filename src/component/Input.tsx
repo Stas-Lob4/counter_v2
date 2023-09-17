@@ -10,5 +10,5 @@ type PropsType = {
 }
 
 export const Input: React.FC<PropsType> = ({value, type,onChange, onWheel, min,max}) => {
-    return <input type={type} value={value} onChange={onChange} onWheel={onWheel} max={max ? max - 1 : undefined} min={min || 0}/>
+    return <input type={type} value={value} onChange={onChange} onWheel={onWheel} max={max ? max - 1 : undefined} min={min ? min  : 0}/>
 };

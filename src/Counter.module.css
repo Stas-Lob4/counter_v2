@@ -30,26 +30,20 @@
     border-radius: 5px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-left: 20px;
+    justify-content: space-around;
 }
 
 .btn_inc {
-    width: 50px;
+    width: 70px;
     height: 40px;
 }
 
 .btn_rst {
-    width: 60px;
+    width: 120px;
     height: 40px;
 }
 
 .btn_dec {
-    width: 50px;
-    height: 40px;
-}
-
-.btn_stn {
-    width: 60px;
+    width: 70px;
     height: 40px;
 }
