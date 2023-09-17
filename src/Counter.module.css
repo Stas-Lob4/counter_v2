@@ -1,0 +1,55 @@
+.counter {
+    box-sizing: border-box;
+    width: 400px;
+    height: 350px;
+    padding: 30px 50px 30px 50px;
+    border: 2px solid darkturquoise;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.counter p {
+    width: 300px;
+    height: 130px;
+    border: 2px solid darkturquoise;
+    border-radius: 5px;
+    background-color: #b7c0d7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+}
+
+.button_box{
+    box-sizing: border-box;
+    width: 300px;
+    height: 100px;
+    border: 2px solid darkturquoise;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 20px;
+}
+
+.btn_inc {
+    width: 50px;
+    height: 40px;
+}
+
+.btn_rst {
+    width: 60px;
+    height: 40px;
+}
+
+.btn_dec {
+    width: 50px;
+    height: 40px;
+}
+
+.btn_stn {
+    width: 60px;
+    height: 40px;
+}

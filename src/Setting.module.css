@@ -1,0 +1,42 @@
+.setting {
+    box-sizing: border-box;
+    width: 400px;
+    height: 350px;
+    padding: 30px 50px 30px 50px;
+    border: 2px solid darkturquoise;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.setting_inputs_box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.setting_value_box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting_value_box span{
+    font-size: 20px;
+}
+
+.setting_value_box input{
+    font-size: 20px;
+    padding: 0;
+    width: 200px;
+    height: 40px;
+    text-align: center;
+}
+
+.setting button{
+    box-sizing: border-box;
+    width: 300px;
+    height: 50px;
+    font-size: 30px;
+}
