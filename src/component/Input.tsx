@@ -7,8 +7,17 @@ type PropsType = {
     max?: number
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void
     onWheel?: (e: React.WheelEvent<HTMLInputElement>) => void
+    onBlur?: (e: ChangeEvent<HTMLInputElement>) => void
+    className?: string
 }
 
-export const Input: React.FC<PropsType> = ({value, type,onChange, onWheel, min,max}) => {
-    return <input type={type} value={value} onChange={onChange} onWheel={onWheel} max={max ? max - 1 : undefined} min={min ? min  : 0}/>
+export const Input: React.FC<PropsType> = ({value, type, onChange, onWheel, className, onBlur}) => {
+    return <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        onWheel={onWheel}
+        className={className}
+        onBlur={onBlur}
+    />
 };

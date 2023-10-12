@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import s from './App..module.css';
 import {Counter} from './Counter';
 import {Setting} from './Setting';
+import {initMaxValue, initMinValue, saveLocalStorageData} from './data/data_init';
+
 
 
 function App() {
@@ -10,40 +12,47 @@ function App() {
     let valueMinValue = localStorage.getItem('minCounterValue')
     let valueMaxValue = localStorage.getItem('maxCounterValue')
 
-    const initMaxValue = 5;
+    const [minValue, setMinValue] = useState(valueMinValue ?  +valueMinValue : initMinValue);
+    const [maxValue, setMaxValue] = useState(valueMaxValue ?  +valueMaxValue : initMaxValue);
+    const initValue = () => valueAsString ? +(valueAsString) : minValue
+    const [counter, setCounter] = useState<number>(initValue);
 
-    const [minValue, setMinValue] = useState(valueMinValue ? JSON.parse(valueMinValue) : 0);
-    const [maxValue, setMaxValue] = useState(valueMaxValue ? JSON.parse(valueMaxValue) : initMaxValue);
-    const initValue = () => valueAsString ? JSON.parse(valueAsString) : minValue
-    const [value, setValue] = useState(initValue);
+    const [setupActive, setSetupActive] = useState(false)
 
-    useEffect(() => {
-        setValue(minValue)
-    }, [minValue, maxValue]);
-    useEffect(() => {
-        localStorage.setItem('counterValue', JSON.stringify(value))
-    }, [value]);
-    useEffect(() => {
-        localStorage.setItem('minCounterValue', JSON.stringify(minValue))
-    }, [minValue]);
-    useEffect(() => {
-        localStorage.setItem('maxCounterValue', JSON.stringify(maxValue))
-    }, [maxValue]);
+    const SetupActiveHandler = (v: boolean) => setSetupActive(v)
 
-    const incCounter = () => setValue(value + 1);
-    const decCounter = () => setValue(value - 1)
-    const updateMaxValue = (maxCount: number) => setMaxValue(maxCount)
-    const updateMinValue = (minCount: number) => setMinValue(minCount)
+    const [error, setError] = useState('')
 
+    const incCounter = () => {
+        const newValue = counter + 1
+        saveLocalStorageData('counterValue', newValue)
+        setCounter(newValue)
+    };
+    const decCounter = () => {
+        const newValue = counter - 1
+        saveLocalStorageData('counterValue', newValue)
+        setCounter(newValue)
+    }
+    const updateMaxValue = (maxCount: number) => {
+        saveLocalStorageData('maxCounterValue', maxCount)
+        setMaxValue(maxCount)
+    }
+    const updateMinValue = (minCount: number) => {
+        saveLocalStorageData('minCounterValue', minCount)
+        setMinValue(minCount)
+        setCounter(minCount)
+    }
     const resetCounter = () => {
         localStorage.clear()
-        setValue(minValue);
+        setCounter(minValue);
     }
 
     return (
         <div className={s.App}>
             <Counter
-                value={value}
+                error={error}
+                setupActive={setupActive}
+                value={counter}
                 maxValue={maxValue}
                 minValue={minValue}
                 incCounter={incCounter}
@@ -52,10 +61,13 @@ function App() {
             />
 
             <Setting
+                error={error}
+                setError={setError}
                 maxValue={maxValue}
                 minValue={minValue}
                 updateMaxValue={updateMaxValue}
                 updateMinValue={updateMinValue}
+                setSetupActive={SetupActiveHandler}
             />
         </div>
     );

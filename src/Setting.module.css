@@ -33,6 +33,9 @@
     height: 40px;
     text-align: center;
 }
+.setting_value_box input.red{
+    color: red;
+}
 
 .setting button{
     box-sizing: border-box;
