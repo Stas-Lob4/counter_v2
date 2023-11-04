@@ -2,6 +2,10 @@ import React, {ChangeEvent, useEffect, useState} from 'react';
 import s from './Setting.module.css'
 import {Input} from './component/Input';
 import {Button} from './component/Button';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from './store/store';
+import {setError, setMaxValueError, setMinValueError} from './reducers/error_reducer';
+import {setIsActiveSetup} from './reducers/counter_reducer';
 
 
 type PropsType = {
@@ -9,81 +13,55 @@ type PropsType = {
     minValue: number
     updateMaxValue: (maxValue: number) => void
     updateMinValue: (minValue: number) => void
-    setSetupActive: (v: boolean) => void
     error: string
-    setError: (error: string) => void
 }
-export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, minValue, maxValue, setError, error, setSetupActive}) => {
+export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, minValue, maxValue, error}) => {
+    const dispatch = useDispatch()
 
     const [minNum, setMinNum] = useState(minValue);
     const [maxNum, setMaxNum] = useState(maxValue);
 
-    const [errorMinNum, setErrorMinNum] = useState(false);
-    const [errorMaxNum, setErrorMaxNum] = useState(false);
+    const errorMinNum = useSelector<RootState, boolean>(state => state.errors.isErrorMinValue)
+    const errorMaxNum = useSelector<RootState, boolean>(state => state.errors.isErrorMaxValue)
 
     let isErrorInputMinValue = isNaN(minNum) || maxNum <= minNum || minNum < 0
     let isErrorInputMaxValue = minNum >= maxNum || isNaN(maxNum) || maxNum <= 0
     let isError = error !== '' || errorMaxNum || errorMinNum || minNum >= maxNum || isNaN(maxNum) || isNaN(minNum)
 
-
     useEffect(() => {
         if(errorMinNum || errorMaxNum){
-            setError('Incorrect value!')
+            dispatch(setError('Incorrect value!'))
         } else {
-            setError('')
+            dispatch(setError(''))
         }
     }, [errorMaxNum, errorMinNum]);
+
 
     const handleMinInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newValue = parseInt(e.currentTarget.value, 10);
         setMinNum(newValue);
-        setSetupActive(true);
-
+        dispatch(setIsActiveSetup(true))
         if (newValue < 0 || newValue >= maxNum) {
-            setErrorMinNum(true)
+            dispatch(setMinValueError(true))
         } else {
-            setErrorMinNum(false)
+            dispatch(setMinValueError(false))
         }
     };
     const handleMaxInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newValue = parseInt(e.currentTarget.value, 10);
         setMaxNum(newValue);
-        setSetupActive(true);
+        dispatch(setIsActiveSetup(true))
+        if (newValue < 1 || newValue === minNum) {
+            dispatch(setMaxValueError(true))
+        } else {
+            dispatch(setMaxValueError(false))
+        }
+    };
 
-        if (newValue < minNum || newValue <= 0) {
-            setErrorMaxNum(true)
-        } else {
-            setErrorMaxNum(false)
-        }
-    };
-    const handleMinInputWheel = (e: React.WheelEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const newValue = minNum + (e.deltaY > 0 ? -1 : 1);
-        setMinNum(newValue);
-        setSetupActive(true);
-
-        if (newValue < 0 || newValue >= maxNum) {
-            setErrorMinNum(true)
-        } else {
-            setErrorMinNum(false)
-        }
-    };
-    const handleMaxInputWheel = (e: React.WheelEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const newValue = maxNum + (e.deltaY > 0 ? -1 : 1);
-        setMaxNum(newValue);
-        if (newValue < minNum || newValue <= 0) {
-            setMaxNum(newValue);
-            setErrorMaxNum(true)
-        } else {
-            setErrorMaxNum(false)
-        }
-        setSetupActive(true)
-    };
     const onClickBtnSettingHandler = () => {
         updateMaxValue(maxNum);
         updateMinValue(minNum);
-        setSetupActive(false)
+        dispatch(setIsActiveSetup(false))
     }
 
     return (
@@ -96,7 +74,6 @@ export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, mi
                         type={'number'}
                         value={maxNum}
                         onChange={handleMaxInputChange}
-                        onWheel={handleMaxInputWheel}
                         onBlur={handleMaxInputChange}
                     />
                 </div>
@@ -107,7 +84,6 @@ export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, mi
                         type={'number'}
                         value={minNum}
                         onChange={handleMinInputChange}
-                        onWheel={handleMinInputWheel}
                         onBlur={handleMinInputChange}
                     />
                 </div>

@@ -19,14 +19,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 50px;
+    font-size: 40px;
 }
 
 .counter p.red {
     color: red;
-    text-align: center;
-    font-size: 35px;
 }
+
+.counter p.red_value {
+    color: red;
+    text-align: center;
+}
+
 
 .button_box{
     box-sizing: border-box;
