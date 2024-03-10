@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 
 type PropsType = {
-    callBack: () => void
+    onClick: () => void
     disabled?: boolean
     className?: string
-    children: string
+    children: ReactNode
 }
-export const Button: React.FC<PropsType> = ({callBack, disabled, className,children}) => {
-    return <button className={className} disabled={disabled} onClick={callBack}>{children}</button>
+export const Button: React.FC<PropsType> = ({onClick, disabled, className,children}) => {
+    return <button className={className} disabled={disabled} onClick={onClick}>{children}</button>
 };

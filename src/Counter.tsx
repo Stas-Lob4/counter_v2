@@ -1,35 +1,42 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import s from './Counter.module.css';
-import {Input} from './component/Input';
 import {Button} from './component/Button';
-import { Link } from 'react-router-dom';
-import {Simulate} from 'react-dom/test-utils';
-import error = Simulate.error;
+import {setCounterValueAC} from './reducers/counter_reducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from './store/store';
 
-type PropsType = {
-    setupActive: boolean
-    value: number
-    maxValue: number
-    minValue: number
-    incCounter: () => void
-    decCounter: () => void
-    resetCounter: () => void
-    error: string
-}
+type PropsType = {}
 
-export const Counter:React.FC<PropsType> = ({incCounter, decCounter, resetCounter, value, maxValue, minValue, setupActive,error}) => {
+export const Counter:React.FC<PropsType> = ({}) => {
 
-    const isMaxValue = value === maxValue;
-    const decDisableBtn = value === minValue;
-    const rstDisableBtn = value === minValue;
+    const counterValue = useSelector<RootState, number>(state => state.counter.counterValue)
+    const error = useSelector<RootState, string>(state => state.errors.error)
+    const minValue = useSelector<RootState, number>(state => state.counter.minValue)
+    const maxValue = useSelector<RootState, number>(state => state.counter.maxValue)
+    const setupActive = useSelector<RootState, boolean>(state => state.counter.setupIsActive)
+
+    const dispatch = useDispatch()
+    const incCounter = () => {
+        dispatch(setCounterValueAC(counterValue + 1))
+    };
+    const decCounter = () => {
+        dispatch(setCounterValueAC(counterValue - 1))
+    }
+    const resetCounter = () => {
+        dispatch(setCounterValueAC(minValue))
+    }
+
+    const isMaxValue = counterValue === maxValue;
+    const decDisableBtn = counterValue === minValue;
+    const rstDisableBtn = counterValue === minValue;
 
 
     return <div className={s.counter}>
-        <p className={error !== '' ? s.red_value : isMaxValue ? s.red : ''}>{error !== '' ? error : setupActive ? "нажми SET" : value}</p>
+        <p className={error !== '' ? s.red_value : isMaxValue ? s.red : ''}>{error !== '' ? error : setupActive ? "нажми SET" : counterValue}</p>
         <div className={s.button_box}>
-            <Button className={s.btn_inc} disabled={setupActive || isMaxValue} callBack={incCounter}>+1</Button>
-            <Button className={s.btn_rst} disabled={setupActive || rstDisableBtn} callBack={resetCounter}>reset</Button>
-            <Button className={s.btn_dec} disabled={setupActive || decDisableBtn} callBack={decCounter}>-1</Button>
+            <Button className={s.btn_inc} disabled={setupActive || isMaxValue} onClick={incCounter}>+1</Button>
+            <Button className={s.btn_rst} disabled={setupActive || rstDisableBtn} onClick={resetCounter}>reset</Button>
+            <Button className={s.btn_dec} disabled={setupActive || decDisableBtn} onClick={decCounter}>-1</Button>
         </div>
     </div>
 };

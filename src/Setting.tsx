@@ -5,57 +5,83 @@ import {Button} from './component/Button';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from './store/store';
 import {setError, setMaxValueError, setMinValueError} from './reducers/error_reducer';
-import {setIsActiveSetup} from './reducers/counter_reducer';
+import {setCounterValueAC, setIsActiveSetup, setMaxValueAC, setMinValueAC} from './reducers/counter_reducer';
 
 
-type PropsType = {
-    maxValue: number
-    minValue: number
-    updateMaxValue: (maxValue: number) => void
-    updateMinValue: (minValue: number) => void
-    error: string
-}
-export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, minValue, maxValue, error}) => {
+type PropsType = {}
+
+export const Setting: React.FC<PropsType> = ({}) => {
+
     const dispatch = useDispatch()
+    const error = useSelector<RootState, string>(state => state.errors.error)
+    const errorMinValue = useSelector<RootState, boolean>(state => state.errors.isErrorMinValue)
+    const errorMaxValue = useSelector<RootState, boolean>(state => state.errors.isErrorMaxValue)
+    const minValue = useSelector<RootState, number>(state => state.counter.minValue)
+    const maxValue = useSelector<RootState, number>(state => state.counter.maxValue)
 
     const [minNum, setMinNum] = useState(minValue);
     const [maxNum, setMaxNum] = useState(maxValue);
 
-    const errorMinNum = useSelector<RootState, boolean>(state => state.errors.isErrorMinValue)
-    const errorMaxNum = useSelector<RootState, boolean>(state => state.errors.isErrorMaxValue)
-
-    let isErrorInputMinValue = isNaN(minNum) || maxNum <= minNum || minNum < 0
-    let isErrorInputMaxValue = minNum >= maxNum || isNaN(maxNum) || maxNum <= 0
-    let isError = error !== '' || errorMaxNum || errorMinNum || minNum >= maxNum || isNaN(maxNum) || isNaN(minNum)
-
+    // init useEffect
     useEffect(() => {
-        if(errorMinNum || errorMaxNum){
-            dispatch(setError('Incorrect value!'))
-        } else {
+        if(minNum >= 0 && maxNum > minNum){
             dispatch(setError(''))
-        }
-    }, [errorMaxNum, errorMinNum]);
-
-
-    const handleMinInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const newValue = parseInt(e.currentTarget.value, 10);
-        setMinNum(newValue);
-        dispatch(setIsActiveSetup(true))
-        if (newValue < 0 || newValue >= maxNum) {
-            dispatch(setMinValueError(true))
-        } else {
-            dispatch(setMinValueError(false))
-        }
-    };
-    const handleMaxInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const newValue = parseInt(e.currentTarget.value, 10);
-        setMaxNum(newValue);
-        dispatch(setIsActiveSetup(true))
-        if (newValue < 1 || newValue === minNum) {
-            dispatch(setMaxValueError(true))
-        } else {
+            dispatch(setIsActiveSetup(false))
+            dispatch(setMaxValueError(false))
             dispatch(setMaxValueError(false))
         }
+    }, []);
+
+
+    // inspect values
+    useEffect(() => {
+        if(maxNum === maxValue){
+            dispatch(setIsActiveSetup(false))
+        } else {
+            dispatch(setIsActiveSetup(true))
+        }
+
+        if(maxNum < 1 || maxNum === minNum){
+            dispatch(setError('Incorrect value!'))
+            dispatch(setMaxValueError(true))
+        } else {
+            dispatch(setError(''))
+            dispatch(setMaxValueError(false))
+        }
+    }, [maxNum]);
+
+    // inspect minNum
+    useEffect(() => {
+        if(minNum === minValue){
+            dispatch(setIsActiveSetup(false))
+        } else {
+            dispatch(setIsActiveSetup(true))
+
+        }
+
+        if(minNum < 0 || minNum >= maxNum){
+            dispatch(setError('Incorrect value!'))
+            dispatch(setMinValueError(true))
+        } else {
+            dispatch(setError(''))
+            dispatch(setMinValueError(false))
+        }
+    }, [minNum]);
+
+
+    const updateMaxValue = (maxCount: number) => {
+        dispatch(setMaxValueAC(maxCount))
+    }
+    const updateMinValue = (minCount: number) => {
+        dispatch(setMinValueAC(minCount))
+        dispatch(setCounterValueAC(minCount))
+    }
+
+    const handleMinInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setMinNum(parseInt(e.currentTarget.value, 10));
+    };
+    const handleMaxInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setMaxNum(parseInt(e.currentTarget.value, 10));
     };
 
     const onClickBtnSettingHandler = () => {
@@ -64,13 +90,15 @@ export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, mi
         dispatch(setIsActiveSetup(false))
     }
 
+    let isError = error !== '' || errorMinValue || errorMaxValue
+
     return (
         <div className={s.setting}>
             <div className={s.setting_inputs_box}>
                 <div className={s.setting_value_box}>
                     <span>max value</span>
                     <Input
-                        className={(isErrorInputMaxValue ? s.red : '')}
+                        className={(errorMaxValue ? s.red : '')}
                         type={'number'}
                         value={maxNum}
                         onChange={handleMaxInputChange}
@@ -80,7 +108,7 @@ export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, mi
                 <div className={s.setting_value_box}>
                     <span>min value</span>
                     <Input
-                        className={(isErrorInputMinValue ? s.red : '')}
+                        className={(errorMinValue ? s.red : '')}
                         type={'number'}
                         value={minNum}
                         onChange={handleMinInputChange}
@@ -88,7 +116,7 @@ export const Setting: React.FC<PropsType> = ({updateMaxValue, updateMinValue, mi
                     />
                 </div>
             </div>
-            <Button disabled={isError} callBack={onClickBtnSettingHandler}>set</Button>
+            <Button disabled={isError} onClick={onClickBtnSettingHandler}>set</Button>
         </div>
     );
 };
